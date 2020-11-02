@@ -1,7 +1,7 @@
 version: 2.1
 jobs:
   node:
-    working_directory: ~/Avoid-Kuvid/api
+    working_directory: ~/Avoid-Kuvid/
     docker:
       - image: cimg/node:12.16
 
@@ -9,7 +9,7 @@ jobs:
       - checkout
 
       - run: ls -lAR ~/
-      - run: cd ~/Avoid-Kuvid/api/Avoid-Kuvid/app/
+      - run: cd ~/Avoid-Kuvid/Avoid-Kuvid/app/
 
       # - restore_cache:
       #     key: yarn-v1-{{ checksum "yarn.lock" }}-{{ arch }}
@@ -38,7 +38,7 @@ jobs:
             JEST_JUNIT_OUTPUT: test-results/jest/junit.xml
 
       - persist_to_workspace:
-          root: ~/Avoid-Kuvid/api
+          root: ~/Avoid-Kuvid/
           paths:
             - node_modules
 
@@ -49,7 +49,7 @@ jobs:
           path: test-results
 
   macos-build-and-test:
-    working_directory: ~/Avoid-Kuvid/api
+    working_directory: ~/Avoid-Kuvid/
     macos:
       xcode: 11.3.0
     environment:
@@ -114,15 +114,15 @@ jobs:
           path: output/scan
             
   android-build-and-test:
-    working_directory: ~/Avoid-Kuvid/api/android
+    working_directory: ~/Avoid-Kuvid/Android
     docker:
       - image: circleci/android:api-29-node
     steps:
       - checkout:
-          path: ~/Avoid-Kuvid/api
+          path: ~/Avoid-Kuvid/
 
       - attach_workspace:
-          at: ~/Avoid-Kuvid/api
+          at: ~/Avoid-Kuvid/
 
       - restore_cache:
           key: bundle-v1-{{ checksum "Gemfile.lock" }}-{{ arch }}
