@@ -8,6 +8,7 @@ jobs:
     steps:
       - checkout
 
+      - run: ls -lAR ~/
       - run: cd ~/Avoid-Kuvid/api/Avoid-Kuvid/app/
 
       # - restore_cache:
