@@ -9,7 +9,7 @@ jobs:
       - checkout
 
       - run: ls -lAR ~/
-      - run: cd ~/Avoid-Kuvid/Avoid-Kuvid/app/
+      - run: cd ~/Avoid-Kuvid/app/
 
       # - restore_cache:
       #     key: yarn-v1-{{ checksum "yarn.lock" }}-{{ arch }}
