@@ -2,7 +2,7 @@ version: '3'
 
 services:
   api:
-    build: ./api
+    build: ./API
     environment:
       - MONGO_DATABASE=${MONGO_DATABASE}
       - MONGO_ROOT_USERNAME=${MONGO_ROOT_USERNAME}
