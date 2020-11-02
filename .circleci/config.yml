@@ -36,7 +36,7 @@ jobs:
           command: |
             cd ~/Avoid-Kuvid/app/
             mkdir -p test-results/jest
-            jest --ci --testResultsProcessor="jest-junit"
+            yarn run test
           environment:
             JEST_JUNIT_OUTPUT: test-results/jest/junit.xml
             JEST_JUNIT_OUTPUT_NAME: test-results/jest/junit.xml
