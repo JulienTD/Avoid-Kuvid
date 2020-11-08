@@ -21,9 +21,9 @@ def home():
 @app.route('/register', methods=['POST'])
 def register():
     try:
-        utils.check_dict(request.json, ('username', 'password'))
-        mytest_db.register(request.json['username'], request.json['password'])
-        return jsonify({'success': True, 'message': f"Successfully registered new user {request.json['username']}"})
+        utils.check_dict(request.json, ('email', 'password'))
+        mytest_db.register(request.json['email'], request.json['password'])
+        return jsonify({'success': True, 'message': f"Successfully registered new user {request.json['email']}"})
     except Exception as e:
         print(e, file=sys.stderr)
         return jsonify({'success': False, 'message': str(e)})
