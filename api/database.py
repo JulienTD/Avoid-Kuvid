@@ -19,5 +19,11 @@ class Database:
         if existing_user:
             raise Exception(f"User '{email}' already exists.")
         hashpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        self.users.insert({'email': email, 'password': hashpass})
+        self.users.insert({'email': email, 'password': hashpass, 'type': 'student'})
 
+    def login(self, email, password):
+        existing_user = self.users.find_one({'email': email})
+        if existing_user:
+            if bcrypt.hashpw(password.encode('utf-8'), existing_user['password']) == existing_user['password']:
+                return True
+        raise Exception(f"Could not login user: '{email}'.")
