@@ -1,3 +1,3 @@
-const serverRoot = 'http://localhost:8080/';
+const serverRoot = 'http://localhost:5000/';
 
 export default serverRoot;
