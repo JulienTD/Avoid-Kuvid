@@ -4,6 +4,7 @@ import datetime
 import sys
 
 import config
+import utils
 
 class Database:
     def __init__(self):
@@ -19,6 +20,7 @@ class Database:
         existing_user = self.users.find_one({'email': email})
         if existing_user:
             raise Exception(f"User '{email}' already exists.")
+        utils.validate_email(email)
         hashpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         self.users.insert({'email': email, 'password': hashpass, 'type': 'student'})
 
@@ -36,6 +38,8 @@ class Database:
         facility = self.facilities.find_one({'name': facility_name}, {'_id': 0})
         if not facility:
             raise Exception(f"Could not find facility {facility_name}")
+        to_datetime = lambda _str : datetime.datetime.strptime(_str, '%d-%m-%Y %H:%M')
+        facility['booked']  = [booked for booked in facility['booked'] if to_datetime(booked['to']) >= datetime.datetime.utcnow()]
         return facility
 
     def set_facility_status(self, email, name, closed):
@@ -53,6 +57,7 @@ class Database:
         self.facilities.update_one(myquery, newvalues)
 
     def add_facility(self, name, description, open_times, **args):
+        ##check if admin!!!
         facility = self.facilities.find_one({'name': name})
         if facility:
             raise Exception(f"Facility '{name}' already exists")
@@ -65,7 +70,7 @@ class Database:
 
     def book_facility(self, email, name, _from, to, **args):
         to_datetime = lambda _str : datetime.datetime.strptime(_str, '%d-%m-%Y %H:%M')
-        
+
         if to_datetime(_from) >= to_datetime(to):
             raise Exception(f"{to} is before {_from}")
         if to_datetime(to) <= datetime.datetime.utcnow():

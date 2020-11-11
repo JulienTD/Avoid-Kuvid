@@ -2,6 +2,7 @@ import random
 import string
 import jwt
 import datetime
+import re
 
 import config
 
@@ -20,3 +21,7 @@ def get_email_from_token(token, secret_key):
     if 'user' not in decoded_token:
         raise Exception("Invalid jwt token")
     return decoded_token['user']
+
+def validate_email(email):
+    if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+        raise Exception("Invalid email")
