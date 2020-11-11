@@ -1,5 +1,7 @@
+import GlobalMap from '../Containers/GlobalMap';
 import Login from '../Containers/Login';
-import SignUp from '../Containers/SignUp';
+import Signup from '../Containers/Signup';
+import Map from '../Containers/GlobalMap';
 
 const Routes = [
     {
@@ -7,9 +9,13 @@ const Routes = [
         component: Login
     },
     {
-        name: 'SignUp',
-        component: SignUp
+        name: 'Signup',
+        component: Signup
     },
+    {
+        name: 'GlobalMap',
+        component: Map
+    }
 ];
 
 export default Routes;

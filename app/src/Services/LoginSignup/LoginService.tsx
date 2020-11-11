@@ -3,7 +3,7 @@ import apiRoot from '../.apiRoot';
 
 class LoginService extends AbstractService {
 
-    logIn(options: any) {
+    public logIn(options: any) {
         return this.request({
             method: 'POST',
             url: apiRoot + 'login',
@@ -18,8 +18,6 @@ class LoginService extends AbstractService {
                 return responseData.json();
             }
             throw responseData.json();
-        }).catch(e => {
-            console.log(e);
         });
     }
 }

@@ -1,10 +1,12 @@
 import { combineReducers, createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 
-import reducerTest from './Reducers/reducerTest';
+import loginReducer from './Reducers/loginReducer';
+import signupReducer from './Reducers/signupReducer';
 
 const reducers = combineReducers({
-    reducerTest
+    loginReducer,
+    signupReducer
 });
 
 export default createStore(reducers, {}, applyMiddleware(ReduxThunk));

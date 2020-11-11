@@ -18,8 +18,6 @@ class SignupService extends AbstractService {
                 return responseData.json();
             }
             throw responseData.json();
-        }).catch(e => {
-            console.log(e);
         });
     }
 }

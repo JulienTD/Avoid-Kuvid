@@ -1,85 +1,134 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text,TextInput, Button, Alert, SafeAreaView, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image, LogBox} from 'react-native';
+import SnackBar from 'react-native-snackbar-component';
 
-const Email_TextInput = () => {
-    const [value, onChangeText] = React.useState();
-    return(
-    <TextInput
-    placeholder="Type here"
-    style={{ height: 40,width:250, borderColor: 'gray', borderWidth: 2,margin:10}}
-    onChangeText={text => onChangeText(text)}
-    value={value}
-  />
-    );
+import { connect } from 'react-redux';
+import { signUp } from '../Actions/signupActions';
+
+import TextInputKU from '../Component/TextInputKU';
+import ButtonKU from '../Component/ButtonKU';
+
+LogBox.ignoreAllLogs(true)
+
+interface SignupProps {
+    navigation: any,
+    signUp: Function,
+    signupReducer: any
 }
-const CodeTextInput = () => {
-    const [value_c, onChangeText_c] = React.useState();
-    return(
-    <TextInput
-    placeholder= "Type here"
-    secureTextEntry={true}
-    style={{ height: 40,width:250, borderColor: 'gray', borderWidth: 2,margin:10}}
-    onChangeText={text => onChangeText_c(text)}
-    value={value_c}
-  />
-    );
+
+interface SignupState {
+    email?: string,
+    password?: string,
+    confirmPassword?: string
 }
-const Separator = () => (
-    <View style={styles.separator}/>
-)
 
+class Signup extends Component<SignupProps, SignupState> {
+    constructor(props: SignupProps) {
+        super(props);
+        this.state = {
+            email: "",
+            password: "",
+            confirmPassword: ""
+        }
+    }
 
-class Signup extends Component {
+    handleTextChange = (key: string, value: string) => {
+        this.setState({
+            [key]: value
+        });
+    }
+
+    handleSignup = async () => {
+        const { signUp, navigation } = this.props;
+        const { email, password, confirmPassword } = this.state;
+
+        let res = await signUp(email, password, confirmPassword);
+
+        if (res === 0)
+            navigation.navigate("GlobalMap");
+    }
+
+    handleLogin = () => {
+        const { navigation } = this.props;
+
+        navigation.navigate("Login");
+    }
 
     render() {
+        const { email, password, confirmPassword } = this.state;
+        const { signupReducer } = this.props;
+
         return (
-            <SafeAreaView style={styles.container}>
-            <View>
-            <Image
-                style={styles.Logo}
-                source={require('../Containers/KU_Logo.png')}
-            />
-            <Text style={{margin:10,marginTop:50}}>ID : Mail Address</Text>
-            <Email_TextInput style={styles.Inputstyles}></Email_TextInput>
-            <Text style={{margin:10}}>Password</Text>
-            <CodeTextInput style={styles.Inputstyles}></CodeTextInput>
-            <Text style={{margin:10}}>Confirm password</Text>
-            <CodeTextInput style={styles.Inputstyles}></CodeTextInput>
+            <View style={styles.main}>
+                <View style={styles.container}>
+                    <View>
+                        <Image
+                            style={styles.logo}
+                            source={require('../../assets/ku_logo.png')}
+                        />
+                    </View>
+                    <View style={styles.subContainer}>
+                        <TextInputKU title="Email" placeholder="kuvid@koreac.ac.kr" security={false}
+                        onChange={(text: string) => this.handleTextChange('email', text)} value={email}/>
+                        <TextInputKU title="Password" placeholder="******" security={true}
+                        onChange={(text: string) => this.handleTextChange('password', text)} value={password}/>
+                        <TextInputKU title="Confirm Password" placeholder="******" security={true}
+                        onChange={(text: string) => this.handleTextChange('confirmPassword', text)} value={confirmPassword}/>
+                    </View>
+                    <View style={styles.subContainer}>
+                        <ButtonKU
+                        title="Create an account"
+                        onPress={() => this.handleSignup()}
+                        />
+                        <TouchableOpacity style={styles.textButton} onPress={() => this.handleLogin()}>
+                            <Text style={styles.text}>I already have an account</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <SnackBar visible={signupReducer.error} textMessage={signupReducer.msg}/>
             </View>
-            <Separator />
-            <View>
-            <Button
-                title="Create account"
-                color="#841584"
-                onPress={()=>Alert.alert('Account Creation')}
-                />
-            </View>
-            </SafeAreaView>
         );
+    }
+}
+
+const mapStateToProps = (state: any) => {
+    return {
+        signupReducer: state.signupReducer
     }
 }
  
 const styles = StyleSheet.create({
+    main: {
+        display: 'flex',
+        height: '100%',
+        justifyContent: 'center',
+        backgroundColor: '#CDCDCD'
+    },
     container: {
-        paddingTop: 50,
         display: 'flex',
-        height:'100%',
+        height:'80%',
         width:'100%',
-        backgroundColor: 'white'
+        alignItems: 'center',
+        justifyContent: 'space-around',
     },
-    Logo:{
-        marginLeft: 150,
-        width: 100,
-        height: 100
-    },
-    separator:{
-        marginVertical: 8,
-        borderBottomColor: "black",
-    },
-    Inputstyles:{
+    subContainer: {
         display: 'flex',
-        width: '100%'
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    logo: {
+        width: 120,
+        height: 120,
+        resizeMode: 'contain'
+    },
+    textButton: {
+        display: 'flex',
+        marginTop: 20,
+    },
+    text: {
+        textDecorationLine: 'underline'
     }
 });
  
-export default Signup;
+export default connect(mapStateToProps, { signUp })(Signup);
