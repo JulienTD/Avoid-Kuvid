@@ -29,7 +29,9 @@ class Database:
         if existing_user:
             if bcrypt.hashpw(password.encode('utf-8'), existing_user['password']) == existing_user['password']:
                 return True
-        raise Exception(f"Could not login user: '{email}'.")
+            else:
+                raise Exception(f"Wrong password for email '{email}'.")
+        raise Exception(f"Email '{email}' not registered.")
 
     def get_facilities(self):
         return list(self.facilities.find({}, {'_id': 0}))
