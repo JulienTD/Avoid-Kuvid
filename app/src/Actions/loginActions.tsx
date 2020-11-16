@@ -1,9 +1,9 @@
-import  { ACTION_TYPES } from '../Store/Reducers/loginReducer'
+import  { ACTION_TYPES } from '../Store/Reducers/loginReducer';
+import  { INFO_TYPES } from '../Store/Reducers/userReducer';
 import LoginService from '../Services/LoginSignup/LoginService';
 
 export const logIn = (email: string, password: string) => {
     return (dispatch: any) => {
-
         const reg = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
         if (!email) {
@@ -21,13 +21,15 @@ export const logIn = (email: string, password: string) => {
         let service = new LoginService();
         let retValue = service.logIn({email: email, password: password}).then((value: any) => {
             logSucceed(dispatch)
-            console.log('GOOD', value);
+            dispatch({
+                type: INFO_TYPES.CONNECT,
+                token: value.token
+            });
             return (0);
         }).catch((error: any) => {
-            let errorMsg = "Network request failed";
+            let errorMsg = error.message;
 
             sendError(dispatch, errorMsg);
-            console.log('ERR', error);
             return (1);
         })
 
@@ -46,18 +48,18 @@ const disableLogError = (dispatch: any) => {
     dispatch({
         type: ACTION_TYPES.DISABLE_LOG_ERROR,
         msg: "",
-    })
+    });
 }
 
 const logFailed = (dispatch: any, error: string) => {
     dispatch({
         type: ACTION_TYPES.FAILED_TO_LOG,
         msg: error,
-    })
+    });
 }
 
 const logSucceed = (dispatch: any) => {
     dispatch({
         type: ACTION_TYPES.LOG_SUCCESS,
-    })
+    });
 }

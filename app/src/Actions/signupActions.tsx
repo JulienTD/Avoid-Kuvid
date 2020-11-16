@@ -1,4 +1,5 @@
-import  { ACTION_TYPES } from '../Store/Reducers/signupReducer'
+import  { ACTION_TYPES } from '../Store/Reducers/signupReducer';
+import  { INFO_TYPES } from '../Store/Reducers/userReducer';
 import SignupService from '../Services/LoginSignup/SignupService';
 
 export const signUp = (email: string, password: string, confirmPassword: string) => {
@@ -25,13 +26,15 @@ export const signUp = (email: string, password: string, confirmPassword: string)
         let service = new SignupService();
         let retValue = service.signUp({email: email, password: password}).then((value: any) => {
             signSucceed(dispatch);
-            console.log('GOOD', value);
-            return (0);
+            dispatch({
+                type: INFO_TYPES.CONNECT,
+                token: value.token
+            });
+            return (0);            return (0);
         }).catch((error: any) => {
-            let errorMsg = "Network request failed";
+            let errorMsg = error.message;
 
             sendError(dispatch, errorMsg);
-            console.log('ERR', error);
             return (1);
         })
 
@@ -50,18 +53,18 @@ const disableSignError = (dispatch: any) => {
     dispatch({
         type: ACTION_TYPES.DISABLE_SIGN_ERROR,
         msg: "",
-    })
+    });
 }
 
 const signFailed = (dispatch: any, error: any) => {
     dispatch({
         type: ACTION_TYPES.FAILED_TO_SIGN,
         msg: error,
-    })
+    });
 }
 
 const signSucceed = (dispatch: any) => {
     dispatch({
         type: ACTION_TYPES.SIGN_SUCCESS,
-    })
+    });
 }

@@ -36,9 +36,9 @@ class Ajax {
             if (responseType === 'json')
                 return response;
             return null;
-        }, (err) => {
+        }).catch((err) => {
             throw err;
-        })
+        });
     }
 }
 
