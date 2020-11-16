@@ -27,7 +27,7 @@ def register():
         return jsonify({'success': True, 'message': f"Successfully registered new user with email '{request.json['email']}'", 'token': token.decode('UTF-8')})
     except Exception as e:
         print(e, file=sys.stderr)
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': str(e)}), 400
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -38,7 +38,7 @@ def login():
         return jsonify({'success': True, 'message': f"Successfully logged in with email '{request.json['email']}'", 'token': token.decode('UTF-8')})
     except Exception as e:
         print(e, file=sys.stderr)
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': str(e)}), 400
 
 
 ##only for us, not for the user
@@ -55,7 +55,7 @@ def add_facility():
         return jsonify({'success': True, 'message': "Successfully added facility"})
     except Exception as e:
         print(e, file=sys.stderr)
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': str(e)}), 400
 
 @app.route('/get_facilities', methods=['POST'])
 def get_facilities():
@@ -68,7 +68,7 @@ def get_facilities():
         return jsonify({'success': True, 'message': "Successfully got facilities", 'facilities': facilities})
     except Exception as e:
         print(e, file=sys.stderr)
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': str(e)}), 400
 
 @app.route('/get_facility_info', methods=['POST'])
 def get_facility_info():
@@ -81,7 +81,7 @@ def get_facility_info():
         return jsonify({'success': True, 'message': "Successfully retrieved facility info", 'facility': facility})
     except Exception as e:
         print(e, file=sys.stderr)
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': str(e)}), 400
 
 @app.route('/book_facility', methods=['POST'])
 def book_facility():
@@ -94,7 +94,7 @@ def book_facility():
         return jsonify({'success': True, 'message': f"Successfully booked facility ({request.json['name']}) from {request.json['_from']} to {request.json['to']}"})
     except Exception as e:
         print(e, file=sys.stderr)
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': str(e)}), 400
 
 @app.route('/set_facility_status', methods=['POST'])
 def set_facility_status():
@@ -107,7 +107,7 @@ def set_facility_status():
         return jsonify({'success': True, 'message': f"Successfully changed facility status"})
     except Exception as e:
         print(e, file=sys.stderr)
-        return jsonify({'success': False, 'message': str(e)})
+        return jsonify({'success': False, 'message': str(e)}), 400
 
 
 if __name__ == "__main__":
