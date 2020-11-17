@@ -1,17 +1,69 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, Image, Text } from 'react-native';
+import Dialog from 'react-native-popup-dialog';
 
-class GlobalMap extends Component {
+import DataVisualization from '../Component/DataVisualization';
+import ButtonKU from '../Component/ButtonKU';
+
+interface FacilityProps {
+    navigation: any,
+}
+
+interface FacilityState {
+    dataVisualization?: boolean,
+}
+
+class Facility extends Component<FacilityProps, FacilityState> {
+    constructor(props: FacilityProps) {
+        super(props);
+        this.state = {
+            dataVisualization: false
+        }
+    }
+
+    dismissPopup = () => {
+        this.setState({dataVisualization: false});
+        return true;
+    }
+
+    handleDataVisualization = () => {
+        this.setState({dataVisualization: !this.state.dataVisualization});
+    }
 
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.search}>
-                    <TextInput style={styles.textInput}/>
+                <Image
+                    style={styles.image}
+                    source={{uri: 'http://builder.hufs.ac.kr/user/hufsenglish/img/dining02.gif'}}
+                />
+                <View style={styles.textContainer}>
+                    <View style={styles.titleContainer}>
+                        <Text style={styles.title}>Cafeteria du Chef Dumas</Text>
+                        <View style={styles.statusContainer}>
+                            <View style={{...styles.circle, backgroundColor: 'green'}}/>
+                            <Text style={styles.status}>Open</Text>
+                        </View>
+                    </View>
+                    <Text style={styles.description}>La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle</Text>
                 </View>
-                <View style={styles.map}>
-
+                <View style={styles.subContainer}>
+                    <ButtonKU
+                        title="Data Visualization"
+                        onPress={() => this.handleDataVisualization()}
+                        buttonStyle={{marginBottom: 18}}
+                    />
+                    {/* <ButtonKU
+                        title="Booking"
+                        onPress={() => this.handleDataVisualization()}
+                    /> */}
                 </View>
+                <Dialog width={0.8} height={0.8} 
+                    visible={this.state.dataVisualization}
+                    onTouchOutside={() => this.dismissPopup()}
+                    onHardwareBackPress={() => this.dismissPopup()}>
+                    <DataVisualization/>
+                </Dialog>
             </View>
         );
     }
@@ -22,30 +74,60 @@ const styles = StyleSheet.create({
         display: 'flex',
         width: '100%',
         height: '100%',
+        flexDirection: 'column',
+        backgroundColor: '#CDCDCD'
     },
-    search: {
-        display: 'flex',
+    image: {
+        display: "flex",
+        flex: 1.25,
         width: '100%',
-        height: 80,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        backgroundColor: 'red'
+        height: '100%'
     },
-    textInput: {
+    textContainer: {
         display: 'flex',
-        height: '60%',
-        width: '70%',
-        borderWidth: 1,
-        borderColor: 'grey',
-        backgroundColor: 'white'
-    },
-    map: {
-        display: 'flex',
-        width: '100%',
+        flex: 1.5,
         height: '100%',
-        backgroundColor: 'blue'
+        width: '100%',
+        justifyContent: 'space-around',
+    },
+    subContainer: {
+        display: 'flex',
+        flex: 1,
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    titleContainer: {
+        display: "flex",
+        alignSelf: "flex-end",
+        marginRight: "10%",
+    },
+    statusContainer: {
+        display: "flex",
+        alignSelf: "flex-end",
+        alignItems: "center",
+        flexDirection: 'row'
+    },
+    title: {
+        marginBottom: 15,
+        fontWeight: "bold",
+        fontSize: 22
+    },
+    circle: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+    },
+    status: {
+        marginLeft: 8,
+        fontStyle: "italic",
+        fontSize: 18
+    },
+    description: {
+        marginHorizontal: '5%'
     }
+
 });
 
-export default GlobalMap;
+export default Facility;
