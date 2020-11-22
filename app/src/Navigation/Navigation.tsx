@@ -15,7 +15,7 @@ class Router extends Component {
         return (
             <NavigationContainer>
                 <View style={styles.container}>
-                    <Stack.Navigator initialRouteName="Login" screenOptions={{headerShown: false}}>
+                    <Stack.Navigator initialRouteName="Booking" screenOptions={{headerShown: false}}>
                         {Routes.map((route, key) => {
                             return (
                                 <Stack.Screen key={key} name={route.name} component={route.component}/>
