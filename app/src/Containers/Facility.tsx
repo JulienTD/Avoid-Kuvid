@@ -58,7 +58,7 @@ class Facility extends Component<FacilityProps, FacilityState> {
                         onPress={() => this.handleDataVisualization()}
                     /> */}
                 </View>
-                <Dialog width={0.8} height={0.8} 
+                <Dialog width={0.8} height={0.8}
                     visible={this.state.dataVisualization}
                     onTouchOutside={() => this.dismissPopup()}
                     onHardwareBackPress={() => this.dismissPopup()}>
