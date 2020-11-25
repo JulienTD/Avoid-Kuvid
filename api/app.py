@@ -40,6 +40,19 @@ def login():
         print(e, file=sys.stderr)
         return jsonify({'success': False, 'message': str(e)})
 
+@app.route('/get_user_schedule', methods=['POST'])
+def get_user_schedule():
+    try:
+        utils.check_dict(request.json, ('token',))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        user_schedule = mytest_db.get_user_schedule(email)
+
+        return jsonify({'success': True, 'message': "Successfully got users schedule", 'user_schedule': user_schedule})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
+
 
 ##only for us, not for the user
 @app.route('/add_facility', methods=['POST'])
@@ -109,6 +122,44 @@ def set_facility_status():
         print(e, file=sys.stderr)
         return jsonify({'success': False, 'message': str(e)})
 
+@app.route('/add_news', methods=['POST'])
+def add_news():
+    try:
+        utils.check_dict(request.json, ('token', 'title', 'description', 'url'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        mytest_db.add_news(email, **request.json)
+
+        return jsonify({'success': True, 'message': "Successfully added the news"})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/del_news', methods=['POST'])
+def del_news():
+    try:
+        utils.check_dict(request.json, ('token', 'title'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        mytest_db.del_news(email, request.json['title'])
+
+        return jsonify({'success': True, 'message': f"Successfully deleted the news with '{request.json['title']}' as title"})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
+
+@app.route('/get_news', methods=['POST'])
+def get_news():
+    try:
+        utils.check_dict(request.json, ('token',))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        news = mytest_db.get_news()
+
+        return jsonify({'success': True, 'message': "Successfully got the news", 'news': news})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == "__main__":
     app.run(host=config.FLASK_HOST,

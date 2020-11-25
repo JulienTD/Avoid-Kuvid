@@ -12,6 +12,7 @@ class Database:
         self.mydb = self.client[config.MONGO_DATABASE]
         self.users = self.mydb.users
         self.facilities = self.mydb.facilities
+        self.news = self.mydb.news
 
     def __del__(self):
         self.client.close()
@@ -33,6 +34,19 @@ class Database:
                 raise Exception(f"Wrong password for email '{email}'.")
         raise Exception(f"Email '{email}' not registered.")
 
+    def get_user_schedule(self, email):
+        res = []
+        to_datetime = lambda _str : datetime.datetime.strptime(_str, config.DATE_FORMAT)
+        actual_time = datetime.datetime.utcnow()
+        for facility in self.facilities.find({}, {'_id': 0}):
+            for booked in facility['booked']:
+                if email in booked['by'] and to_datetime(booked['to']) >= actual_time:
+                    res.append({'name': facility['name'],
+                                'description': facility['description'],
+                                **booked
+                    })
+        return res
+
     def get_facilities(self):
         return list(self.facilities.find({}, {'_id': 0}))
 
@@ -40,7 +54,7 @@ class Database:
         facility = self.facilities.find_one({'name': facility_name}, {'_id': 0})
         if not facility:
             raise Exception(f"Could not find facility {facility_name}")
-        to_datetime = lambda _str : datetime.datetime.strptime(_str, '%d-%m-%Y %H:%M')
+        to_datetime = lambda _str : datetime.datetime.strptime(_str, config.DATE_FORMAT)
         facility['booked']  = [booked for booked in facility['booked'] if to_datetime(booked['to']) >= datetime.datetime.utcnow()]
         return facility
 
@@ -71,7 +85,7 @@ class Database:
         })
 
     def book_facility(self, email, name, _from, to, **args):
-        to_datetime = lambda _str : datetime.datetime.strptime(_str, '%d-%m-%Y %H:%M')
+        to_datetime = lambda _str : datetime.datetime.strptime(_str, config.DATE_FORMAT)
 
         if to_datetime(_from) >= to_datetime(to):
             raise Exception(f"{to} is before {_from}")
@@ -93,3 +107,18 @@ class Database:
         myquery = {'name': name}
         newvalues = {'$set': {'booked': facility['booked']}}
         self.facilities.update_one(myquery, newvalues)
+
+    def add_news(self, email, title, description, url, **args):
+        ##check user rights before!!
+        self.news.insert({'title': title,
+                          'description': description,
+                          'url': url,
+                          'date_created': datetime.datetime.utcnow().strftime(config.DATE_FORMAT)
+        })
+
+    def del_news(self, email, title):
+        ##check user rights before!!
+        pass
+
+    def get_news(self):
+        return list(self.news.find({}, {'_id': 0}))
