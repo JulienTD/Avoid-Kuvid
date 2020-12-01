@@ -7,6 +7,7 @@ import utils
 import sys
 
 from database import Database
+from generate_data import generate_data
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = utils.generate_secret_key()
@@ -58,7 +59,7 @@ def get_user_schedule():
 @app.route('/add_facility', methods=['POST'])
 def add_facility():
     try:
-        utils.check_dict(request.json, ('token', 'name', 'description', 'open_times'))
+        utils.check_dict(request.json, ('token', 'name', 'description', 'open_times', 'image', 'bookable'))
 
         email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
         if email != "admin@admin.admin":##hardcoded!!!, compare type instead
@@ -162,6 +163,7 @@ def get_news():
         return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == "__main__":
+    generate_data()
     app.run(host=config.FLASK_HOST,
             port=config.FLASK_PORT,
             debug=config.FLASK_DEBUG,
