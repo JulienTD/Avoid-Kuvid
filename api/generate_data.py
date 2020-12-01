@@ -7,7 +7,7 @@ class User(Database):
         try:
             self.register(email, password)
         except Exception as e:
-            print(e, sys.stderr)
+            print(e, file=sys.stderr)
 
 class Facility(Database):
     def __init__(self, name, open_times, description='Short description', image='https://example.com/image.png', bookable=True):
@@ -15,7 +15,7 @@ class Facility(Database):
         try:
             self.add_facility(name, description, open_times, image, bookable)
         except Exception as e:
-            print(e, sys.stderr)
+            print(e, file=sys.stderr)
 
 def generate_data():
     User('normal.user@test.test', 'abcd')
