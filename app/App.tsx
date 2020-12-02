@@ -10,6 +10,7 @@ class App extends Component {
 
   componentDidMount = () => {
     StatusBar.setHidden(true);
+    
   }
 
   render() {
