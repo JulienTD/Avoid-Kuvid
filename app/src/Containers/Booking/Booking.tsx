@@ -1,52 +1,25 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, TextInput, Text, SafeAreaView, Button, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TextInput, Text, SafeAreaView, Button, TouchableOpacity, Image } from 'react-native';
 import Modal, {
     ModalTitle,
     ModalContent,
     ModalFooter,
-    ModalButton,
-    SlideAnimation,
-    ScaleAnimation,
+    ModalButton
 } from 'react-native-modals';
 
 import { Dimensions } from 'react-native';
 import EventCalendar from 'react-native-events-calendar'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import BookingService from '../Services/Booking/BookingService';
+import BookingService from '../../Services/Booking/BookingService';
+import { NavigationInjectedProps, withNavigation } from 'react-navigation';
+import { IEvent, IState } from './IState';
+import { connect } from 'react-redux';
+import { bookFacility } from '../../Actions/bookingAction';
 
 let { width } = Dimensions.get('window');
 
-interface IEvent {
-    start: string;
-    end: string;
-    title: string;
-    summary: string;
-    color?: string;
-}
 
-interface ITimePicker {
-    visible: boolean;
-    picking: string;
-    value: Date;
-}
-
-interface IBooking {
-    date: string;
-    startTime: string;
-    endTime: string;
-    disabled: boolean;
-}
-
-interface IState {
-    events: IEvent[];
-    visible: boolean;
-    timePicker: ITimePicker;
-    booking: IBooking;
-}
-
-class Booking extends Component<{}, IState> {
-
-    public bookingService!: BookingService;
+class Booking extends Component<NavigationInjectedProps, IState> {
 
     constructor(props) {
         super(props);
@@ -68,31 +41,34 @@ class Booking extends Component<{}, IState> {
     }
 
     public componentDidMount() {
-        const facility = "";
-
-        this.bookingService = new BookingService();
-        this.bookingService.fetchSchedule(facility)
-        .then((events: IEvent[]) => {
-            this.setState({ events });
-        })
-        .catch((err) => {
-            console.error(`Failed to fetch the schedule of the facility: ${facility} !`);
-        });
+        this.setState({events: (this.props as any).route.params.booked});
     }
 
     public render() {
         return (
             <SafeAreaView style={styles.container}>
+                <View style={styles.topbar}>
+                <TouchableOpacity
+                    style={styles.topbar_content}
+                    onPress={() => this.props.navigation.goBack()}
+                >
+                    <Image
+                        style={styles.logo}
+                        source={require('../../../assets/back_arrow.png')}
+                    />
+                    <Text style={styles.topbar_text}>Go back</Text>
+                </TouchableOpacity>
+                </View>
                 <EventCalendar
                     eventTapped={this.onEventClick.bind(this)}
                     onPressHour={this.onScheduleClick.bind(this)}
                     events={this.state.events}
                     width={width}
-                    initDate={'2017-09-07'}
+                    initDate={this.createDateFromObject(new Date(Date.now()))}
                     upperCaseHeader
                     uppercase
                     scrollToFirst={true}
-                    size={1}
+                    size={14}
                     />
                 <Modal
                     width={0.9}
@@ -112,21 +88,21 @@ class Booking extends Component<{}, IState> {
                     }
                     footer={
                         <ModalFooter>
-                        <ModalButton
-                            text="Cancel"
-                            bordered
-                            onPress={() => {
-                                this.setState({ visible: false });
-                            }}
-                            key="button-1"
-                        />
-                        <ModalButton
-                            disabled={this.state.booking.disabled}
-                            text="Book"
-                            bordered
-                            onPress={() => this.handleBookButton()}
-                            key="button-2"
-                        />
+                            <ModalButton
+                                text="Cancel"
+                                bordered
+                                onPress={() => {
+                                    this.setState({ visible: false });
+                                }}
+                                key="button-1"
+                            />
+                            <ModalButton
+                                disabled={this.state.booking.disabled}
+                                text="Book"
+                                bordered
+                                onPress={() => this.handleBookButton()}
+                                key="button-2"
+                            />
                         </ModalFooter>
                     }
                 >
@@ -155,7 +131,7 @@ class Booking extends Component<{}, IState> {
                         />}
                     </ModalContent>
                 </Modal>
-          </SafeAreaView>
+            </SafeAreaView>
         );
     }
 
@@ -201,24 +177,38 @@ class Booking extends Component<{}, IState> {
         }});
     };
 
+    /**
+     * Fired when the user clicks on the book button
+     */
     private handleBookButton() {
+        const { bookFacility } = this.props as any;
         const fullStartDate = `${this.state.booking.date} ${this.state.booking.startTime}`;
         const fullEndDate = `${this.state.booking.date} ${this.state.booking.endTime}`;
 
         this.setState({ visible: false });
-        this.setState({ events: [...this.state.events, {
-            start: fullStartDate,
-            end: fullEndDate,
-            title: 'Study room',
-            summary: 'Room n°3423-1'
-        }]});
-        this.bookingService.bookFacility(
-            "patrick",
-            new Date(Date.parse(fullStartDate)).toUTCString(),
-            new Date(Date.parse(fullEndDate)).toUTCString()
-        );
+        bookFacility(
+            (this.props as any).route.params.facility,
+            fullStartDate.slice(0, -3),
+            fullEndDate.slice(0, -3),
+            (this.props as any).userReducer.token
+        )
+        .then((data: number) => {
+            this.setState({ events: [...this.state.events, {
+                start: fullStartDate,
+                end: fullEndDate,
+                title: (this.props as any).route.params.facility,
+                summary: ''
+            }]});
+        })
+        .catch((err) => {
+            console.error("Error");
+            console.log(err);
+        });
     }
 
+    /**
+     * Fired when the user click on the start date
+     */
     private handleStartDateButton() {
         const date = new Date(0);
         date.setHours(parseInt(this.state.booking.startTime.split(":")[0]), 10);
@@ -231,6 +221,9 @@ class Booking extends Component<{}, IState> {
         }});
     }
 
+    /**
+     * Fired when the user click on the end date
+     */
     private handleEndDateButton() {
         const date = new Date(0);
         date.setHours(parseInt(this.state.booking.endTime.split(":")[0]), 10);
@@ -263,6 +256,14 @@ class Booking extends Component<{}, IState> {
         result += (month < 10) ? `0${month}-` : `${month}-`;
         result += (day < 10) ? `0${day}` : `${day}`;
         return result;
+    }
+
+    /**
+     * Create a formatted date from date object
+     * @param date date object
+     */
+    private createDateFromObject(date: Date) {
+        return this.createDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
     }
 
     /**
@@ -304,7 +305,35 @@ const styles = StyleSheet.create({
     },
     text: {
       fontSize: 20
+    },
+    topbar: {
+        alignSelf: 'stretch',
+        height: 52,
+        flexDirection: 'row', // row
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'space-between', // center, space-around
+        paddingLeft: 10,
+        paddingRight: 10
+    },
+    logo: {
+        width: 20,
+        height: 20,
+        resizeMode: 'contain'
+    },
+    topbar_content: {
+        flexDirection: "row"
+    },
+    topbar_text: {
+        fontSize: 17
     }
 });
 
-export default Booking;
+
+const mapStateToProps = (state: any) => {
+    return {
+        userReducer: state.userReducer
+    }
+}
+
+export default withNavigation(connect(mapStateToProps, {bookFacility})(Booking));
