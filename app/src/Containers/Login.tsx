@@ -43,7 +43,7 @@ class Login extends Component<LoginProps, LoginState> {
         let res = await logIn(email, password);
 
         if (res === 0)
-            navigation.navigate("News");
+            navigation.navigate("GlobalMap");
     }
 
     handleSignup = () => {
