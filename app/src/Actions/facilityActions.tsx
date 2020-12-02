@@ -5,7 +5,7 @@ export const getFacility = (name: string, token: string) => {
     return (dispatch: any) => {
 
         let service = new FacilityService();
-        let retValue = service.logIn({name: name, token: token}).then((value: any) => {
+        let retValue = service.getFacility({name: name, token: token}).then((value: any) => {
             facilitySucceed(dispatch, value);
             return (0);
         }).catch((error: any) => {

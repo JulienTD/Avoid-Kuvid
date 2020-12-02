@@ -9,7 +9,6 @@ import { getFacility } from '../Actions/facilityActions';
 
 import DataVisualization from '../Component/DataVisualization';
 import ButtonKU from '../Component/ButtonKU';
-import facilityReducer from '../Store/Reducers/facilityReducer';
 
 interface FacilityProps {
     navigation: any,

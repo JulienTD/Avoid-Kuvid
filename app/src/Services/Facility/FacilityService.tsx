@@ -4,13 +4,13 @@ import { apiRoot } from '../apiRoot';
 
 class FacilityService extends AbstractService {
 
-    public logIn(options: any) {
+    public getFacility(options: any) {
         return this.request({
             method: 'POST',
-            url: apiRoot + 'login',
+            url: apiRoot + 'get_facility_info',
             json: {
                 token: options.token,
-                email: options.email
+                name: options.name
             },
         }).then(responseData => {
             if (responseData === null)
