@@ -3,7 +3,6 @@ import { View, StyleSheet, Image, Text, ActivityIndicator } from 'react-native';
 import Dialog from 'react-native-popup-dialog';
 import SnackBar from 'react-native-snackbar-component';
 
-
 import { connect } from 'react-redux';
 import { getFacility } from '../Actions/facilityActions';
 

@@ -15,6 +15,5 @@ export default (state = INITIAL_STATE, action: any) => {
             return {...state, token: ""};
         default:
             return state;
-
     }
 };

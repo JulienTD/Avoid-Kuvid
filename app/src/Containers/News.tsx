@@ -1,29 +1,73 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Surface } from 'react-native-paper';
+import SnackBar from 'react-native-snackbar-component';
+
+import { connect } from 'react-redux';
+import { getNews } from '../Actions/newsActions';
 
 import NewsPaper from '../Component/NewsPaper'; 
 
-class GlobalMap extends Component {
+interface NewsProps {
+    navigation: any,
+    getNews: Function,
+    newsReducer: any,
+    userReducer: any
+}
+
+interface NewsState {
+    loaded?: boolean
+}
+
+class News extends Component<NewsProps, NewsState> {
+    constructor(props: NewsProps) {
+        super(props);
+        this.state = {
+            loaded: false
+        }
+    }
+
+    componentDidMount = () => {
+        this.loadNews();
+    }
+
+    loadNews = async () => {
+        const { getNews, userReducer } = this.props;
+
+        let res = await getNews(userReducer.token);
+
+        if (res === 0)
+            this.setState({loaded: true});
+    }
 
     render() {
+        const { loaded } = this.state;
+        const { newsReducer } = this.props;
+
         return (
             <View style={styles.container}>
                 <Surface style={styles.head}>
                     <Text style={styles.title}>News</Text>
                 </Surface>
-                <ScrollView style={styles.board}>
-                    <NewsPaper/>
-                    <NewsPaper/>
-                    <NewsPaper/>
-                    <NewsPaper/>
-                    <NewsPaper/>
-                    <NewsPaper/>
-
+                {loaded ? <ScrollView style={styles.board}>
+                    {newsReducer.news.map((value: any, index: number) => {
+                        return <NewsPaper title={value.title} date={value.date_created} description={value.description} key={index}/>
+                    })}
                 </ScrollView>
+                : <View style={styles.subContainer}>
+                    <ActivityIndicator size="large" color="#A72A1E"/>
+                </View>}
+                <SnackBar visible={newsReducer.error} textMessage={newsReducer.msg}/>
             </View>
         );
+    }
+}
+
+const mapStateToProps = (state: any) => {
+    return {
+        newsReducer: state.newsReducer,
+        userReducer: state.userReducer
     }
 }
 
@@ -34,6 +78,12 @@ const styles = StyleSheet.create({
         height: '100%',
         justifyContent: "space-around",
         backgroundColor: "#CDCDCD"
+    },
+    subContainer: {
+        display: 'flex',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     head: {
         display: 'flex',
@@ -57,4 +107,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default GlobalMap;
+export default connect(mapStateToProps, { getNews })(News);

@@ -5,6 +5,9 @@ import { Surface } from 'react-native-paper';
 import Dialog, { DialogContent } from 'react-native-popup-dialog';
 
 interface NewsPaperProps {
+    title: string,
+    date: string,
+    description: string,
 }
 
 interface NewsPaperState {
