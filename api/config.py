@@ -11,5 +11,4 @@ MONGO_ROOT_PASSWORD = os.getenv('MONGO_ROOT_PASSWORD', 'admin')
 MONGO_API = f'mongodb://{MONGO_ROOT_USERNAME}:{MONGO_ROOT_PASSWORD}@db:27017/{MONGO_DATABASE}' if ENV_SETUP else "mongodb://localhost:27017/"
 
 TIME_FORMAT = '%H:%M'
-DATE_FORMAT = f'%d-%m-%Y {TIME_FORMAT}'
-
+DATE_FORMAT = f'%Y-%m-%d {TIME_FORMAT}'
