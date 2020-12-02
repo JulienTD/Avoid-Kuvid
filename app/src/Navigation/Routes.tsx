@@ -2,7 +2,7 @@ import GlobalMap from '../Containers/GlobalMap';
 import Login from '../Containers/Login';
 import Signup from '../Containers/Signup';
 import Map from '../Containers/GlobalMap';
-import Booking from '../Containers/Booking';
+import Booking from '../Containers/Booking/Booking';
 
 const Routes = [
     {
