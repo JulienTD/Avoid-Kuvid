@@ -10,10 +10,8 @@ def generate_secret_key():
     return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128))
 
 def check_dict(dct: dict, values: tuple):
-    try:
-        all(dct[_] for _ in values)
-    except KeyError as e:
-        raise Exception(f"Missing argument {e}")
+    if not all(_ in dct for _ in values):
+        raise Exception("Please provide all informations")
 
 def create_token(email, secret_key):
     return jwt.encode({'user': email, 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)}, secret_key)

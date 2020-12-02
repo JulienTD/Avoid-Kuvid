@@ -1,55 +1,23 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Image, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Image, Text } from 'react-native';
 import Dialog from 'react-native-popup-dialog';
-import SnackBar from 'react-native-snackbar-component';
-
-import { connect } from 'react-redux';
-import { getFacility } from '../Actions/facilityActions';
 
 import DataVisualization from '../Component/DataVisualization';
 import ButtonKU from '../Component/ButtonKU';
 
 interface FacilityProps {
     navigation: any,
-    facilityName: string,
-    getFacility: Function,
-    facilityReducer: any,
-    userReducer: any
 }
 
 interface FacilityState {
     dataVisualization?: boolean,
-    loaded?: boolean
 }
 
 class Facility extends Component<FacilityProps, FacilityState> {
     constructor(props: FacilityProps) {
         super(props);
         this.state = {
-            dataVisualization: false,
-            loaded: false
-        }
-    }
-
-    componentDidMount = () => {
-        this.loadFacility();
-    }
-
-    loadFacility = async () => {
-        const { getFacility, userReducer } = this.props;
-
-        let res = await getFacility("cafeteria", userReducer.token);
-
-        if (res === 0)
-            this.setState({loaded: true});
-    }
-
-    getStatusColor = (status: string) => {
-        switch (status) {
-            case "Open": return ("green");
-            case "Close": return ("red");
-            case "Maintenance": return ("orange");
-            default: return ("red");
+            dataVisualization: false
         }
     }
 
@@ -62,34 +30,22 @@ class Facility extends Component<FacilityProps, FacilityState> {
         this.setState({dataVisualization: !this.state.dataVisualization});
     }
 
-    handleBooking = () => {
-        const { navigation, facilityReducer } = this.props;
-
-        navigation.navigate("Booking", {
-            name: facilityReducer.facility.name,
-            booked: facilityReducer.facility.booked
-        });
-    }
-
     render() {
-        const { facilityReducer } = this.props;
-        const { loaded } = this.state;
-
         return (
-            loaded ? <View style={styles.container}>
+            <View style={styles.container}>
                 <Image
                     style={styles.image}
-                    source={{uri: facilityReducer.facility.image}}
+                    source={{uri: 'http://builder.hufs.ac.kr/user/hufsenglish/img/dining02.gif'}}
                 />
                 <View style={styles.textContainer}>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.title}>{facilityReducer.facility.name}</Text>
+                        <Text style={styles.title}>Cafeteria du Chef Dumas</Text>
                         <View style={styles.statusContainer}>
-                            <View style={{...styles.circle, backgroundColor: this.getStatusColor(facilityReducer.facility.status)}}/>
-                            <Text style={styles.status}>{facilityReducer.facility.status}</Text>
+                            <View style={{...styles.circle, backgroundColor: 'green'}}/>
+                            <Text style={styles.status}>Open</Text>
                         </View>
                     </View>
-                    <Text style={styles.description}>{facilityReducer.facility.description}</Text>
+                    <Text style={styles.description}>La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle La belle cafeteria du chef dumas en boucle</Text>
                 </View>
                 <View style={styles.subContainer}>
                     <ButtonKU
@@ -97,11 +53,10 @@ class Facility extends Component<FacilityProps, FacilityState> {
                         onPress={() => this.handleDataVisualization()}
                         buttonStyle={{marginBottom: 18}}
                     />
-                    {facilityReducer.facility.bookable &&
-                    <ButtonKU
+                    {/* <ButtonKU
                         title="Booking"
-                        onPress={() => this.handleBooking()}
-                    />}
+                        onPress={() => this.handleDataVisualization()}
+                    /> */}
                 </View>
                 <Dialog width={0.8} height={0.8}
                     visible={this.state.dataVisualization}
@@ -110,20 +65,7 @@ class Facility extends Component<FacilityProps, FacilityState> {
                     <DataVisualization/>
                 </Dialog>
             </View>
-            : <View style={styles.container}>
-                <View style={styles.subContainer}>
-                    <ActivityIndicator size="large" color="#A72A1E"/>
-                </View>
-                <SnackBar visible={facilityReducer.error} textMessage={facilityReducer.msg}/>
-            </View>
         );
-    }
-}
-
-const mapStateToProps = (state: any) => {
-    return {
-        facilityReducer: state.facilityReducer,
-        userReducer: state.userReducer
     }
 }
 
@@ -188,4 +130,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default connect(mapStateToProps, { getFacility })(Facility);
+export default Facility;

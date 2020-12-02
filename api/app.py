@@ -1,6 +1,5 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request#, send_file
 from flask_cors import CORS
-import functools
 
 import config
 import utils
@@ -8,118 +7,161 @@ import utils
 import sys
 
 from database import Database
-from generate_data import generate_data
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = utils.generate_secret_key()
 CORS(app)
 
-db = Database()
-
-def normal_func(required):
-    def wrapper(func):
-        @functools.wraps(func)
-        def inner(*args, **kwargs):
-            try:
-                utils.check_dict(request.json, required)
-                return jsonify(func(*args, **kwargs))
-            except Exception as e:
-                print(e, file=sys.stderr)
-                return jsonify({'success': False, 'message': str(e)})
-        return inner
-    return wrapper
-
-def normal_func_email(required):
-    def wrapper(func):
-        @functools.wraps(func)
-        def inner(*args, **kwargs):
-            try:
-                utils.check_dict(request.json, required)
-                email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
-                return jsonify(func(email, *args, **kwargs))
-            except Exception as e:
-                print(e, file=sys.stderr)
-                return jsonify({'success': False, 'message': str(e)})
-        return inner
-    return wrapper
+mytest_db = Database()
 
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({'success': True})
 
 @app.route('/register', methods=['POST'])
-@normal_func(required=('email', 'password'))
 def register():
-    db.register(**request.json)
-    token = utils.create_token(request.json['email'], app.config["SECRET_KEY"])
-    return {'success': True, 'message': f"Successfully registered new user with email '{request.json['email']}'", 'token': token.decode('UTF-8')}
+    try:
+        utils.check_dict(request.json, ('email', 'password'))
+        mytest_db.register(**request.json)
+        token = utils.create_token(request.json['email'], app.config["SECRET_KEY"])
+        return jsonify({'success': True, 'message': f"Successfully registered new user with email '{request.json['email']}'", 'token': token.decode('UTF-8')})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/login', methods=['POST'])
-@normal_func(required=('email', 'password'))
 def login():
-    db.login(**request.json)
-    token = utils.create_token(request.json['email'], app.config["SECRET_KEY"])
-    return {'success': True, 'message': f"Successfully logged in with email '{request.json['email']}'", 'token': token.decode('UTF-8')}
+    try:
+        utils.check_dict(request.json, ('email', 'password'))
+        mytest_db.login(**request.json)
+        token = utils.create_token(request.json['email'], app.config["SECRET_KEY"])
+        return jsonify({'success': True, 'message': f"Successfully logged in with email '{request.json['email']}'", 'token': token.decode('UTF-8')})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/get_user_schedule', methods=['POST'])
-@normal_func_email(required=('token',))
-def get_user_schedule(email):
-    user_schedule = db.get_user_schedule(email)
-    return {'success': True, 'message': "Successfully got users schedule", 'user_schedule': user_schedule}
+def get_user_schedule():
+    try:
+        utils.check_dict(request.json, ('token',))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        user_schedule = mytest_db.get_user_schedule(email)
+
+        return jsonify({'success': True, 'message': "Successfully got users schedule", 'user_schedule': user_schedule})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
+
 
 ##only for us, not for the user
 @app.route('/add_facility', methods=['POST'])
-@normal_func_email(required=('token', 'name', 'description', 'open_times', 'image', 'bookable'))
-def add_facility(email):
-    if email != "admin@admin.admin":##hardcoded!!!, compare type instead
-        raise Exception("User not allowed")
-    db.add_facility(**request.json)
-    return {'success': True, 'message': "Successfully added facility"}
+def add_facility():
+    try:
+        utils.check_dict(request.json, ('token', 'name', 'description', 'open_times'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        if email != "admin@admin.admin":##hardcoded!!!, compare type instead
+            raise Exception("User not allowed")
+        mytest_db.add_facility(**request.json)
+
+        return jsonify({'success': True, 'message': "Successfully added facility"})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/get_facilities', methods=['POST'])
-@normal_func_email(required=('token',))
-def get_facilities(email):
-    facilities = db.get_facilities()
-    return {'success': True, 'message': "Successfully got facilities", 'facilities': facilities}
+def get_facilities():
+    try:
+        utils.check_dict(request.json, ('token',))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        facilities = mytest_db.get_facilities()
+
+        return jsonify({'success': True, 'message': "Successfully got facilities", 'facilities': facilities})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/get_facility_info', methods=['POST'])
-@normal_func_email(required=('token', 'name'))
-def get_facility_info(email):
-    facility = db.get_facility_info(request.json['name'])
-    return {'success': True, 'message': "Successfully retrieved facility info", 'facility': facility}
+def get_facility_info():
+    try:
+        utils.check_dict(request.json, ('token', 'name'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        facility = mytest_db.get_facility_info(request.json['name'])
+
+        return jsonify({'success': True, 'message': "Successfully retrieved facility info", 'facility': facility})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/book_facility', methods=['POST'])
-@normal_func_email(required= ('token', 'name', '_from', 'to'))
-def book_facility(email):
-    db.book_facility(email, **request.json)
-    return {'success': True, 'message': f"Successfully booked facility ({request.json['name']}) from {request.json['_from']} to {request.json['to']}"}
+def book_facility():
+    try:
+        utils.check_dict(request.json, ('token', 'name', '_from', 'to'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        mytest_db.book_facility(email, **request.json)
+
+        return jsonify({'success': True, 'message': f"Successfully booked facility ({request.json['name']}) from {request.json['_from']} to {request.json['to']}"})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/set_facility_status', methods=['POST'])
-@normal_func_email(required=('token', 'closed', 'name'))
-def set_facility_status(email):
-    db.set_facility_status(email, request.json['name'], request.json['closed'])
-    return {'success': True, 'message': f"Successfully changed facility status"}
+def set_facility_status():
+    try:
+        utils.check_dict(request.json, ('token', 'closed', 'name'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        mytest_db.set_facility_status(email, request.json['name'], request.json['closed'])
+
+        return jsonify({'success': True, 'message': f"Successfully changed facility status"})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/add_news', methods=['POST'])
-@normal_func_email(required=('token', 'title', 'description', 'url'))
-def add_news(email):
-    db.add_news(email, **request.json)
-    return {'success': True, 'message': "Successfully added the news"}
+def add_news():
+    try:
+        utils.check_dict(request.json, ('token', 'title', 'description', 'url'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        mytest_db.add_news(email, **request.json)
+
+        return jsonify({'success': True, 'message': "Successfully added the news"})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/del_news', methods=['POST'])
-@normal_func_email(required=('token', 'title'))
-def del_news(email):
-    db.del_news(email, request.json['title'])
-    return {'success': True, 'message': f"Successfully deleted the news with '{request.json['title']}' as title"}
+def del_news():
+    try:
+        utils.check_dict(request.json, ('token', 'title'))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        mytest_db.del_news(email, request.json['title'])
+
+        return jsonify({'success': True, 'message': f"Successfully deleted the news with '{request.json['title']}' as title"})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 @app.route('/get_news', methods=['POST'])
-@normal_func_email(required= ('token',))
-def get_news(email):
-    news = db.get_news()
-    return {'success': True, 'message': "Successfully got the news", 'news': news}
+def get_news():
+    try:
+        utils.check_dict(request.json, ('token',))
+
+        email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
+        news = mytest_db.get_news()
+
+        return jsonify({'success': True, 'message': "Successfully got the news", 'news': news})
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return jsonify({'success': False, 'message': str(e)})
 
 if __name__ == "__main__":
-    generate_data()
     app.run(host=config.FLASK_HOST,
             port=config.FLASK_PORT,
             debug=config.FLASK_DEBUG,

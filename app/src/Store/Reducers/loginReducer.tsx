@@ -19,5 +19,6 @@ export default (state = INITIAL_STATE, action: any) => {
             return {...state, msg: "", error: false};
         default:
             return state;
+
     }
 };

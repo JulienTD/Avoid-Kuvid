@@ -4,15 +4,11 @@ import ReduxThunk from 'redux-thunk';
 import loginReducer from './Reducers/loginReducer';
 import signupReducer from './Reducers/signupReducer';
 import userReducer from './Reducers/userReducer';
-import facilityReducer from './Reducers/facilityReducer';
-import newsReducer from './Reducers/newsReducer';
 
 const reducers = combineReducers({
     loginReducer,
     signupReducer,
-    userReducer,
-    facilityReducer,
-    newsReducer
+    userReducer
 });
 
 export default createStore(reducers, {}, applyMiddleware(ReduxThunk));

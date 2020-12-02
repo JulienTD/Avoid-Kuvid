@@ -17,13 +17,13 @@ class Database:
     def __del__(self):
         self.client.close()
 
-    def register(self, email, password, _type='student'):
+    def register(self, email, password):
         existing_user = self.users.find_one({'email': email})
         if existing_user:
             raise Exception(f"User '{email}' already exists.")
         utils.validate_email(email)
         hashpass = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        self.users.insert({'email': email, 'password': hashpass, 'type': _type})
+        self.users.insert({'email': email, 'password': hashpass, 'type': 'student'})
 
     def login(self, email, password):
         existing_user = self.users.find_one({'email': email})
@@ -48,48 +48,37 @@ class Database:
         return res
 
     def get_facilities(self):
-        return list(self.facilities.find({}, {'_id': 0, 'name': 1}))
+        return list(self.facilities.find({}, {'_id': 0}))
 
     def get_facility_info(self, facility_name):
         facility = self.facilities.find_one({'name': facility_name}, {'_id': 0})
         if not facility:
             raise Exception(f"Could not find facility {facility_name}")
-        to_datetime_time = lambda _str : datetime.datetime.strptime(_str, config.TIME_FORMAT).time()
         to_datetime = lambda _str : datetime.datetime.strptime(_str, config.DATE_FORMAT)
-
         facility['booked']  = [booked for booked in facility['booked'] if to_datetime(booked['to']) >= datetime.datetime.utcnow()]
-
-        is_inside_time = lambda slot : to_datetime_time(slot['_from']) <= datetime.datetime.utcnow().time() <= to_datetime_time(slot['to'])
-        is_inside = lambda slot : to_datetime(slot['_from']) <= datetime.datetime.utcnow() <= to_datetime(slot['to'])
-        opened = any(is_inside_time(open_times) for open_times in facility['open_times'])
-        maintenance = any(is_inside(closed) for closed in facility['closed'])
-
-        facility['status'] = 'maintenance' if maintenance else 'opened' if opened else 'closed'
         return facility
 
     def set_facility_status(self, email, name, closed):
         existing_user = self.users.find_one({'email': email})
         if not existing_user:
-            raise Exception("Could not find user.")
+            raise Exception("Could not find user")
         if existing_user['type'] != 'staff':
-            raise Exception("Only staff members can change the facility status.")
+            raise Exception("Only staff members can change the facility status")
 
         facility = self.facilities.find_one({'name': name})
         if not facility:
-            raise Exception(f"Facility '{name}' already exists.")
+            raise Exception(f"Facility '{name}' already exists")
         myquery = {'name': name}
         newvalues = {'$set': {'closed': closed}}
         self.facilities.update_one(myquery, newvalues)
 
-    def add_facility(self, name, description, open_times, image, bookable, **args):
+    def add_facility(self, name, description, open_times, **args):
         ##check if admin!!!
         facility = self.facilities.find_one({'name': name})
         if facility:
             raise Exception(f"Facility '{name}' already exists")
         self.facilities.insert({'name': name,
                                 'description': description,
-                                'image': image,
-                                'bookable': bookable,
                                 'open_times': open_times,##{"_from": "10:00", "to": "11:00"}
                                 'booked': [],##{"_from": "10:00", "to": "11:00", by: ["user_id"]}
                                 'closed': []##{"_from": "10:00", "to": "11:00", "reason": "hollidays"}
@@ -99,22 +88,19 @@ class Database:
         to_datetime = lambda _str : datetime.datetime.strptime(_str, config.DATE_FORMAT)
 
         if to_datetime(_from) >= to_datetime(to):
-            raise Exception(f"{to} is before {_from}.")
+            raise Exception(f"{to} is before {_from}")
         if to_datetime(to) <= datetime.datetime.utcnow():
-            raise Exception("Cannot book a facility in the past.")
+            raise Exception("Cannot book a facility in the past")
 
         facility = self.facilities.find_one({'name': name})
         if not facility:
-            raise Exception(f"Facility '{name}' does not exist.")
-
-        if not facility['bookable']:
-            raise Exception(f"Facility '{name}' cannot be booked.")
+            raise Exception(f"Facility '{name}' does not exist")
 
         is_inside = lambda slot, a : to_datetime(slot['_from']) <= to_datetime(a) <= to_datetime(slot['to'])
 
         for slot in facility['booked']:
             if is_inside(slot, _from) or is_inside(slot, to):
-                raise Exception("Already booked.")
+                raise Exception("Already booked")
 
         facility['booked'].append({'_from': _from, 'to': to, 'by': [email]})##user_id instead of email!!
 
