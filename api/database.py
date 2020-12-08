@@ -64,7 +64,7 @@ class Database:
         opened = any(is_inside_time(open_times) for open_times in facility['open_times'])
         maintenance = any(is_inside(closed) for closed in facility['closed'])
 
-        facility['status'] = 'maintenance' if maintenance else 'opened' if opened else 'closed'
+        facility['status'] = 'Maintenance' if maintenance else 'Opened' if opened else 'Closed'
         return facility
 
     def set_facility_status(self, email, name, closed):
@@ -81,8 +81,7 @@ class Database:
         newvalues = {'$set': {'closed': closed}}
         self.facilities.update_one(myquery, newvalues)
 
-    def add_facility(self, name, description, open_times, image, bookable, **args):
-        ##check if admin!!!
+    def add_facility_impl(self, name, description, open_times, image, bookable):
         facility = self.facilities.find_one({'name': name})
         if facility:
             raise Exception(f"Facility '{name}' already exists")
@@ -94,6 +93,15 @@ class Database:
                                 'booked': [],##{"_from": "10:00", "to": "11:00", by: ["user_id"]}
                                 'closed': []##{"_from": "10:00", "to": "11:00", "reason": "hollidays"}
         })
+
+    def add_facility(self, email, name, description, open_times, image, bookable, *args, **kwargs):
+        existing_user = self.users.find_one({'email': email})
+        if not existing_user:
+            raise Exception("Could not find user.")
+        if existing_user['type'] != 'staff':
+            raise Exception("Only staff members can add news.")
+
+        self.add_facility_impl(name, description, open_times, image, bookable)
 
     def book_facility(self, email, name, _from, to, **args):
         to_datetime = lambda _str : datetime.datetime.strptime(_str, config.DATE_FORMAT)
@@ -122,17 +130,33 @@ class Database:
         newvalues = {'$set': {'booked': facility['booked']}}
         self.facilities.update_one(myquery, newvalues)
 
-    def add_news(self, email, title, description, url, **args):
-        ##check user rights before!!
+    def add_news_impl(self, title, description):
+        existing_news = self.news.find_one({'title': title})
+        if existing_news:
+            raise Exception(f"News '{title}' already exists.")
         self.news.insert({'title': title,
                           'description': description,
-                          'url': url,
                           'date_created': datetime.datetime.utcnow().strftime(config.DATE_FORMAT)
         })
 
+    def add_news(self, email, title, description, *args, **kwargs):
+        existing_user = self.users.find_one({'email': email})
+        if not existing_user:
+            raise Exception("Could not find user.")
+        if existing_user['type'] != 'staff':
+            raise Exception("Only staff members can add news.")
+        self.add_news_impl(title, description)
+
     def del_news(self, email, title):
-        ##check user rights before!!
-        pass
+        existing_user = self.users.find_one({'email': email})
+        if not existing_user:
+            raise Exception("Could not find user.")
+        if existing_user['type'] != 'staff':
+            raise Exception("Only staff members can delete news.")
+        existing_news = self.news.find_one({'title': title})
+        if not existing_news:
+            raise Exception(f"News '{title}' doesn't exists.")
+        self.news.remove({'title': title})
 
     def get_news(self):
         return list(self.news.find({}, {'_id': 0}))

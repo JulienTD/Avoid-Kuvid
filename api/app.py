@@ -22,7 +22,7 @@ def normal_func(required):
         def inner(*args, **kwargs):
             try:
                 utils.check_dict(request.json, required)
-                return jsonify(func(*args, **kwargs))
+                return jsonify({'success': True, **func(*args, **kwargs)})
             except Exception as e:
                 print(e, file=sys.stderr)
                 return jsonify({'success': False, 'message': str(e)})
@@ -36,7 +36,7 @@ def normal_func_email(required):
             try:
                 utils.check_dict(request.json, required)
                 email = utils.get_email_from_token(request.json['token'], app.config["SECRET_KEY"])
-                return jsonify(func(email, *args, **kwargs))
+                return jsonify({'success': True, **func(email, *args, **kwargs)})
             except Exception as e:
                 print(e, file=sys.stderr)
                 return jsonify({'success': False, 'message': str(e)})
@@ -52,71 +52,68 @@ def home():
 def register():
     db.register(**request.json)
     token = utils.create_token(request.json['email'], app.config["SECRET_KEY"])
-    return {'success': True, 'message': f"Successfully registered new user with email '{request.json['email']}'", 'token': token.decode('UTF-8')}
+    return {'message': f"Successfully registered new user with email '{request.json['email']}'", 'token': token.decode('UTF-8')}
 
 @app.route('/login', methods=['POST'])
 @normal_func(required=('email', 'password'))
 def login():
     db.login(**request.json)
     token = utils.create_token(request.json['email'], app.config["SECRET_KEY"])
-    return {'success': True, 'message': f"Successfully logged in with email '{request.json['email']}'", 'token': token.decode('UTF-8')}
+    return {'message': f"Successfully logged in with email '{request.json['email']}'", 'token': token.decode('UTF-8')}
 
 @app.route('/get_user_schedule', methods=['POST'])
 @normal_func_email(required=('token',))
 def get_user_schedule(email):
     user_schedule = db.get_user_schedule(email)
-    return {'success': True, 'message': "Successfully got users schedule", 'user_schedule': user_schedule}
+    return {'message': "Successfully got users schedule", 'user_schedule': user_schedule}
 
-##only for us, not for the user
 @app.route('/add_facility', methods=['POST'])
 @normal_func_email(required=('token', 'name', 'description', 'open_times', 'image', 'bookable'))
 def add_facility(email):
-    if email != "admin@admin.admin":##hardcoded!!!, compare type instead
-        raise Exception("User not allowed")
-    db.add_facility(**request.json)
-    return {'success': True, 'message': "Successfully added facility"}
+    db.add_facility(email, **request.json)
+    return {'message': "Successfully added facility"}
 
 @app.route('/get_facilities', methods=['POST'])
 @normal_func_email(required=('token',))
 def get_facilities(email):
     facilities = db.get_facilities()
-    return {'success': True, 'message': "Successfully got facilities", 'facilities': facilities}
+    return {'message': "Successfully got facilities", 'facilities': facilities}
 
 @app.route('/get_facility_info', methods=['POST'])
 @normal_func_email(required=('token', 'name'))
 def get_facility_info(email):
     facility = db.get_facility_info(request.json['name'])
-    return {'success': True, 'message': "Successfully retrieved facility info", 'facility': facility}
+    return {'message': "Successfully retrieved facility info", 'facility': facility}
 
 @app.route('/book_facility', methods=['POST'])
 @normal_func_email(required= ('token', 'name', '_from', 'to'))
 def book_facility(email):
     db.book_facility(email, **request.json)
-    return {'success': True, 'message': f"Successfully booked facility ({request.json['name']}) from {request.json['_from']} to {request.json['to']}"}
+    return {'message': f"Successfully booked facility ({request.json['name']}) from {request.json['_from']} to {request.json['to']}"}
 
 @app.route('/set_facility_status', methods=['POST'])
 @normal_func_email(required=('token', 'closed', 'name'))
 def set_facility_status(email):
     db.set_facility_status(email, request.json['name'], request.json['closed'])
-    return {'success': True, 'message': f"Successfully changed facility status"}
+    return {'message': f"Successfully changed facility status"}
 
 @app.route('/add_news', methods=['POST'])
-@normal_func_email(required=('token', 'title', 'description', 'url'))
+@normal_func_email(required=('token', 'title', 'description'))
 def add_news(email):
     db.add_news(email, **request.json)
-    return {'success': True, 'message': "Successfully added the news"}
+    return {'message': "Successfully added the news"}
 
 @app.route('/del_news', methods=['POST'])
 @normal_func_email(required=('token', 'title'))
 def del_news(email):
     db.del_news(email, request.json['title'])
-    return {'success': True, 'message': f"Successfully deleted the news with '{request.json['title']}' as title"}
+    return {'message': f"Successfully deleted the news with '{request.json['title']}' as title"}
 
 @app.route('/get_news', methods=['POST'])
 @normal_func_email(required= ('token',))
 def get_news(email):
     news = db.get_news()
-    return {'success': True, 'message': "Successfully got the news", 'news': news}
+    return {'message': "Successfully got the news", 'news': news}
 
 if __name__ == "__main__":
     generate_data()
