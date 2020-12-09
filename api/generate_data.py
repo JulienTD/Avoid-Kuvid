@@ -23,10 +23,10 @@ class Facility(Database):
             print(e, file=sys.stderr)
 
 class News(Database):
-    def __init__(self, title, description):
+    def __init__(self, title, description, date=None):
         super().__init__()
         try:
-            self.add_news_impl(title, description)
+            self.add_news_impl(title, description, date)
         except Exception as e:
             print(e, file=sys.stderr)
 
@@ -41,27 +41,28 @@ def generate_data():
     )
 
     Facility(name='Futurus study room 3100',
-             description='This is the description of the futurus study room 3100',
+             description='Study room 3100 of the futurus building situated at the 1st floor. Capacity of 5 people. Furniture: 2 PC.',
+             image="https://mlfl0eebtpgt.i.optimole.com/2mK1l6Q.7Lbi~5ba50/w:930/h:621/q:90/https://www.seoulinspired.com/wp-content/uploads/University-of-Seoul-Class.jpg"
              open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
              bookable=True
     )
     Facility(name='Futurus study room 3200',
-             description='This is the description of the futurus study room 3200',
+             description='Study room 3200 of the futurus building situated at the 2nd floor. Capacity of 3 people. Furniture: 1 PC.',
              open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
              bookable=True
     )
     Facility(name='Futurus study room 3300',
-             description='This is the description of the futurus study room 3300',
+             description='Study room 3300 of the futurus building situated at the 3rd floor. Capacity of 10 people. Furniture: 5 PC.',
              open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
              bookable=True
     )
 
     Facility(name='Futurus eating room',
-             description='This is the description of the futurus eating room',
+             description='Eating room of the futurus building siduated in the basement. Capacity 20 people. Furniture: 2 microwaves.',
              open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
              bookable=False
     )
 
-    News("COVID-19 Announcement", "The social distancing level in the greater Seoul area will be placed under level 2.5, the second highest in the country's five-tier COVID-19 alert system starting from today for the next three weeks, with other parts of the nation including Sejong City under level 2")
-    News("News title", "Description of the news.")
-    News("Another news", "Another description of the news, but this time a bit longer.")
+    News("COVID-19 Announcement", "The social distancing level in the greater Seoul area will be placed under level 2.5, the second highest in the country's five-tier COVID-19 alert system starting from today for the next three weeks, with other parts of the nation including Sejong City under level 2.")
+    News("Daily COVID-19 Cases", "+677 new cases, actual level: level 2.5.", "2020-12-09 09:00")
+    News("SkyCoffe", "The Sky Coffe is closing, because the daily new cases increased to much.", "2020-11-20 10:05")

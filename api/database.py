@@ -130,13 +130,15 @@ class Database:
         newvalues = {'$set': {'booked': facility['booked']}}
         self.facilities.update_one(myquery, newvalues)
 
-    def add_news_impl(self, title, description):
+    def add_news_impl(self, title, description, date=None):
         existing_news = self.news.find_one({'title': title})
         if existing_news:
             raise Exception(f"News '{title}' already exists.")
+        if date is None:
+            date = datetime.datetime.utcnow().strftime(config.DATE_FORMAT)
         self.news.insert({'title': title,
                           'description': description,
-                          'date_created': datetime.datetime.utcnow().strftime(config.DATE_FORMAT)
+                          'date_created': date
         })
 
     def add_news(self, email, title, description, *args, **kwargs):
