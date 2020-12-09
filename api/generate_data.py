@@ -33,21 +33,35 @@ class News(Database):
 def generate_data():
     User('normal.user@test.test', 'abcd')
     User('staff@test.test', 'abcd', 'staff')
-    Facility(name='cafeteria',
+
+    Facility(name='Cafeteria',
              description='This is the description of the cafeteria',
              open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
              bookable=False
     )
-    Facility(name='test room',
-             description='This is the description of the test room',
-             open_times=[{"_from": "10:00", "to": "11:00"}],##!!!!!!!!!heures en utc!!!!!!!!
-             bookable=False
-    )
-    Facility(name='bookable room',
-             description='This is the description of the bookable room',
-             open_times=[{"_from": "2:00", "to": "09:00"}],##!!!!!!!!!heures en utc!!!!!!!!
+
+    Facility(name='Futurus study room 3100',
+             description='This is the description of the futurus study room 3100',
+             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
              bookable=True
     )
+    Facility(name='Futurus study room 3200',
+             description='This is the description of the futurus study room 3200',
+             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             bookable=True
+    )
+    Facility(name='Futurus study room 3300',
+             description='This is the description of the futurus study room 3300',
+             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             bookable=True
+    )
+
+    Facility(name='Futurus eating room',
+             description='This is the description of the futurus eating room',
+             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             bookable=False
+    )
+
+    News("COVID-19 Announcement", "The social distancing level in the greater Seoul area will be placed under level 2.5, the second highest in the country's five-tier COVID-19 alert system starting from today for the next three weeks, with other parts of the nation including Sejong City under level 2")
     News("News title", "Description of the news.")
     News("Another news", "Another description of the news, but this time a bit longer.")
-    
