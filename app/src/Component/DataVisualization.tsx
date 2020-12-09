@@ -14,9 +14,13 @@ const chartConfig = {
     strokeWidth: 2,
     barPercentage: 0.5,
     useShadowColorFromDataset: false
-  };
+};
 
-class DataVisualization extends Component {
+interface DataVisualizationProps {
+    name?: string
+}
+
+class DataVisualization extends Component<DataVisualizationProps> {
 
     render() {
         const data = {
@@ -34,7 +38,7 @@ class DataVisualization extends Component {
         return (
             <DialogContent style={styles.container}>
                 <View style={styles.titleContainer}>
-                    <Text style={styles.title}>Frequentation of Cafeteria du chef Dumas</Text>
+                    <Text style={styles.title}>Frequentation of {this.props.name}</Text>
                 </View>
                 <LineChart data={data}
                 width={screenWidth * 0.8}

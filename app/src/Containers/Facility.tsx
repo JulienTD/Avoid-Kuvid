@@ -37,11 +37,8 @@ class Facility extends Component<FacilityProps, FacilityState> {
     }
 
     loadFacility = async () => {
-        console.log("ICI");
         const { getFacility, userReducer, route } = this.props;
-        console.log("OUPSI")
         const { facilityName } = route.params;
-        console.log(facilityName);
 
         let res = await getFacility(facilityName, userReducer.token);
 
@@ -71,7 +68,7 @@ class Facility extends Component<FacilityProps, FacilityState> {
         const { navigation, facilityReducer } = this.props;
 
         navigation.navigate("Booking", {
-            name: facilityReducer.facility.name,
+            facility: facilityReducer.facility.name,
             booked: facilityReducer.facility.booked
         });
     }
@@ -112,7 +109,7 @@ class Facility extends Component<FacilityProps, FacilityState> {
                     visible={this.state.dataVisualization}
                     onTouchOutside={() => this.dismissPopup()}
                     onHardwareBackPress={() => this.dismissPopup()}>
-                    <DataVisualization/>
+                    <DataVisualization name={facilityReducer.facility.name}/>
                 </Dialog>
             </SafeAreaView>
             : <SafeAreaView style={styles.container}>
