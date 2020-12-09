@@ -8,10 +8,11 @@ import { getFacility } from '../Actions/facilityActions';
 
 import DataVisualization from '../Component/DataVisualization';
 import ButtonKU from '../Component/ButtonKU';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface FacilityProps {
     navigation: any,
-    facilityName: string,
+    route: any,
     getFacility: Function,
     facilityReducer: any,
     userReducer: any
@@ -36,9 +37,13 @@ class Facility extends Component<FacilityProps, FacilityState> {
     }
 
     loadFacility = async () => {
-        const { getFacility, userReducer } = this.props;
+        console.log("ICI");
+        const { getFacility, userReducer, route } = this.props;
+        console.log("OUPSI")
+        const { facilityName } = route.params;
+        console.log(facilityName);
 
-        let res = await getFacility("cafeteria", userReducer.token);
+        let res = await getFacility(facilityName, userReducer.token);
 
         if (res === 0)
             this.setState({loaded: true});
@@ -76,7 +81,7 @@ class Facility extends Component<FacilityProps, FacilityState> {
         const { loaded } = this.state;
 
         return (
-            loaded ? <View style={styles.container}>
+            loaded ? <SafeAreaView style={styles.container}>
                 <Image
                     style={styles.image}
                     source={{uri: facilityReducer.facility.image}}
@@ -109,13 +114,13 @@ class Facility extends Component<FacilityProps, FacilityState> {
                     onHardwareBackPress={() => this.dismissPopup()}>
                     <DataVisualization/>
                 </Dialog>
-            </View>
-            : <View style={styles.container}>
+            </SafeAreaView>
+            : <SafeAreaView style={styles.container}>
                 <View style={styles.subContainer}>
                     <ActivityIndicator size="large" color="#A72A1E"/>
                 </View>
                 <SnackBar visible={facilityReducer.error} textMessage={facilityReducer.msg}/>
-            </View>
+            </SafeAreaView>
         );
     }
 }

@@ -10,9 +10,8 @@ import Modal, {
 import { Dimensions } from 'react-native';
 import EventCalendar from 'react-native-events-calendar'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import BookingService from '../../Services/Booking/BookingService';
 import { NavigationInjectedProps, withNavigation } from 'react-navigation';
-import { IEvent, IState } from './IState';
+import { IState } from './IState';
 import { connect } from 'react-redux';
 import { bookFacility } from '../../Actions/bookingAction';
 

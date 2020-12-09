@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, SafeAreaView } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { Surface } from 'react-native-paper';
 import SnackBar from 'react-native-snackbar-component';
@@ -46,7 +46,7 @@ class News extends Component<NewsProps, NewsState> {
         const { newsReducer } = this.props;
 
         return (
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <Surface style={styles.head}>
                     <Text style={styles.title}>News</Text>
                 </Surface>
@@ -59,7 +59,7 @@ class News extends Component<NewsProps, NewsState> {
                     <ActivityIndicator size="large" color="#A72A1E"/>
                 </View>}
                 <SnackBar visible={newsReducer.error} textMessage={newsReducer.msg}/>
-            </View>
+            </SafeAreaView>
         );
     }
 }
