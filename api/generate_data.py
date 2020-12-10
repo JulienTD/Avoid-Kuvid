@@ -36,30 +36,30 @@ def generate_data():
 
     Facility(name='Cafeteria',
              description='This is the description of the cafeteria',
-             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             open_times=[{"_from": "03:00", "to": "05:30"}],
              bookable=False
     )
 
     Facility(name='Futurus study room 3100',
              description='Study room 3100 of the futurus building situated at the 1st floor. Capacity of 5 people. Furniture: 2 PC.',
-             image="https://mlfl0eebtpgt.i.optimole.com/2mK1l6Q.7Lbi~5ba50/w:930/h:621/q:90/https://www.seoulinspired.com/wp-content/uploads/University-of-Seoul-Class.jpg"
-             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             image="https://mlfl0eebtpgt.i.optimole.com/2mK1l6Q.7Lbi~5ba50/w:930/h:621/q:90/https://www.seoulinspired.com/wp-content/uploads/University-of-Seoul-Class.jpg",
+             open_times=[{"_from": "03:00", "to": "05:30"}],
              bookable=True
     )
     Facility(name='Futurus study room 3200',
              description='Study room 3200 of the futurus building situated at the 2nd floor. Capacity of 3 people. Furniture: 1 PC.',
-             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             open_times=[{"_from": "03:00", "to": "05:30"}],
              bookable=True
     )
     Facility(name='Futurus study room 3300',
              description='Study room 3300 of the futurus building situated at the 3rd floor. Capacity of 10 people. Furniture: 5 PC.',
-             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             open_times=[{"_from": "03:00", "to": "05:30"}],
              bookable=True
     )
 
     Facility(name='Futurus eating room',
              description='Eating room of the futurus building siduated in the basement. Capacity 20 people. Furniture: 2 microwaves.',
-             open_times=[{"_from": "03:00", "to": "05:30"}],##!!!!!!!!!heures en utc!!!!!!!!
+             open_times=[{"_from": "03:00", "to": "05:30"}],
              bookable=False
     )
 
