@@ -17,7 +17,7 @@ The project is composed of 2 modules:
 ### Setup the server and the database
 Step 1: Have Docker installed on your computer.  
 Step 2: Launch the database and the server by executing `docker-compose up --build`.  
-Step 3: The server is now up and running at the address: [http:localhost:5000](http:localhost:5000)  
+Step 3: The server is now up and running at the address: [http://localhost:5000](http://localhost:5000)  
 
 ### Setup the mobile application
 Step 1: Have `Node.js` and `npm` installed  
