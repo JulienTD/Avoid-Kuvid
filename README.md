@@ -1,6 +1,12 @@
 # Avoid-Kuvid
-
 [![CircleCI](https://circleci.com/gh/JulienTD/Avoid-Kuvid.svg?style=svg&circle-token=883a3d49dc6234ee0b76cc20d0a37768569c3044)](https://app.circleci.com/pipelines/github/JulienTD)
+
+Mobile application permitting students to organize their school life more easily within the university by consulting the cafeteria attendance, or by booking a study room.
+
+## Context
+This project has been made during our course "Software Engineering with Practise" at Korea University during the first semester (2020).
+
+## Architecture
 
 The project is composed of 2 modules:
 - `api`: it contains the server and permits to receive request from the mobile application
@@ -18,3 +24,14 @@ Step 1: Have `Node.js` and `npm` installed
 Step 2: Have `expo` installed (`npm install --global expo-cli`)  
 Step 3: Install all dependencies by executing `npm ci`  
 Step 4: Launch the mobile application by executing `npm run start`  
+
+## Developers
+- Bae Jang Hoon
+- Kim Dong Hwan
+- Kim Gyeong Ho
+- Maue Victor
+- Rigal Dorian
+- Tauran Julien
+
+## License
+MIT License
