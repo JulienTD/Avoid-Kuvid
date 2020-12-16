@@ -23,7 +23,8 @@ Step 3: The server is now up and running at the address: [http://localhost:5000]
 Step 1: Have `Node.js` and `npm` installed  
 Step 2: Have `expo` installed (`npm install --global expo-cli`)  
 Step 3: Install all dependencies by executing `npm ci`  
-Step 4: Launch the mobile application by executing `npm run start`  
+Step 4: Launch the patch by executing `./bin/patch_node_modules.bat` on Windows or `./bin/patch_node_modules.sh` on Linux  
+Step 5: Launch the mobile application by executing `npm run start`  
 
 ## Developers
 - Bae Jang Hoon
