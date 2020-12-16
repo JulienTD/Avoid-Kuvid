@@ -24,7 +24,7 @@ Step 1: Have `Node.js` and `npm` installed
 Step 2: Have `expo` installed (`npm install --global expo-cli`)  
 Step 3: Install all dependencies by executing `npm ci`  
 Step 4: Launch the patch by executing `./bin/patch_node_modules.bat` on Windows or `./bin/patch_node_modules.sh` on Linux  
-Step 5: You may have to change the API URL in the file: `app/src/Services/apiRoot.tsx`
+Step 5: You may have to change the API URL in the file: `app/src/Services/apiRoot.tsx`  
 Step 6: Launch the mobile application by executing `npm run start`  
 
 ## Developers
